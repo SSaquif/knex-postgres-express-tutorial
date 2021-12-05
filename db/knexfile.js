@@ -1,8 +1,17 @@
 // the env file is placed in the root folder of the project
 // ie the same folder as the package.json file
-require("dotenv").config({ path: "../.env" });
+const dotenv = require("dotenv");
+
+console.log(process.cwd());
+
+if (process.cwd().includes("/db")) {
+  dotenv.config({ path: "../.env" });
+} else {
+  dotenv.config();
+}
 
 const { POSTGRES_DB, POSTGRES_PASS, POSTGRES_USER } = process.env;
+console.log(POSTGRES_DB, POSTGRES_PASS, POSTGRES_USER);
 
 module.exports = {
   development: {

@@ -6,27 +6,29 @@
 
 - [Knex.js & Postgres](#knexjs--postgres)
   - [Contents](#contents)
-  - [Case Sensitivity Reminder](#case-sensitivity-reminder)
   - [Intro & Resources](#intro--resources)
+  - [Case Sensitivity Reminder](#case-sensitivity-reminder)
   - [DB setup](#db-setup)
   - [knexfile.js](#knexfilejs)
   - [Migrations](#migrations)
     - [Create Migration File, `knexfile.js`](#create-migration-file-knexfilejs)
     - [File Anatomy](#file-anatomy)
     - [Running Migrations](#running-migrations)
+      - [Path Update](#path-update)
     - [Migration Tables](#migration-tables)
 
 <!-- tocstop -->
-
-## Case Sensitivity Reminder
-
-> `Important:` With Databases always use underscores (snake case) when for naming purposes, never Pascal/Camel Case. Cause sometimes DBs can be case insensitive and that can cause tons of issues. I think camel case in nosql document keys are fine though.
 
 ## Intro & Resources
 
 Learning knex.js with postgres & express. There is no FE for this project
 
-- [Youtube tutorial](https://www.youtube.com/watch?v=wfrn21E2NaU)
+- [Youtube Tutorial](https://www.youtube.com/watch?v=wfrn21E2NaU)
+- [knex.js,sql query builder](https://knexjs.org/)
+
+## Case Sensitivity Reminder
+
+> `Important:` With Databases always use underscores (snake case) when for naming purposes, never Pascal/Camel Case. Cause sometimes DBs can be case insensitive and that can cause tons of issues. I think camel case in nosql document keys are fine though.
 
 ## DB setup
 
@@ -159,9 +161,27 @@ So I updated the path to the `.env` file for the `dotenv` package in the `knexfi
 require("dotenv").config({ path: "../.env" });
 ```
 
+#### Path Update
+
+Updated config path to run from both db directory or root dir
+
+1. presently works from db dir (used during migration)
+2. have not tested root dir, which I expect is what will be used when running via express
+   1. TODO: Update with result
+
+```js
+if (process.cwd().includes("/db")) {
+  dotenv.config({ path: "../.env" });
+} else {
+  dotenv.config();
+}
+```
+
 ### Migration Tables
 
-In addition to the `person` table created by this example, migrations also create 2 more tables
+In addition to the `person` table created by this example, migrations also create 2 more tables. See video for more info.
 
 1. knex_migrations
+   1. Tracks migrations history
 2. knex_migrations_lock
+   1. Provides mutex so that mutiple users can run migrations simultaneously
