@@ -17,6 +17,7 @@
     - [File Anatomy](#file-anatomy)
     - [Running Migrations](#running-migrations)
       - [Path Update](#path-update)
+      - [Possible Issues with `dotenv` and `knexfile`](#possible-issues-with-dotenv-and-knexfile)
     - [Migration Tables](#migration-tables)
 
 <!-- tocstop -->
@@ -39,9 +40,9 @@ This tutorial has no request body validation
 
 Code logic/concerns are separated in separate folders
 
-1. routes
+1. `routes`
    1. express endpoints
-2. db
+2. `db`
    1. migrations
       1. db table schema(s) can found here
       2. run it initially to create/migrate the dbs
@@ -50,15 +51,15 @@ Code logic/concerns are separated in separate folders
       1. grants access to the db through an export `db` object
    3. knexfile
       1. access info for the db
-3. controller
+3. `controller`
    1. Using classes (not required), helpful incase we need to do dependancy injection
    2. If we want want we can access the `db` object from here
    3. But the controller is not supposed to have direct access to the `data layer`
    4. Hence we have a service layer
    5. `Note:` The controller is just responsible for receiving the request and delgating it to the service layer and communicate any errors that might have occured
-4. service
+4. `service`
    1. The service layer is the one who actually has the logic and knows what to do
-5. dao (data access object)
+5. `dao` (data access object)
    1. The dao object/layer is basically there to abstract away the db access
    2. So different DB backends can be used, cause our service doesn't care what underlying DB we are using. We could have different ones in the db folder.
    3. If we have to switch the `DB` then we only have to modify this
@@ -206,7 +207,7 @@ Updated config path to run from both db directory or root dir
 
 1. presently works from db dir (used during migration)
 2. have not tested root dir, which I expect is what will be used when running via express
-   1. TODO: Update with result
+   1. TODO: YES the else is needed
 
 ```js
 if (process.cwd().includes("/db")) {
@@ -214,6 +215,21 @@ if (process.cwd().includes("/db")) {
 } else {
   dotenv.config();
 }
+```
+
+#### Possible Issues with `dotenv` and `knexfile`
+
+Now the above check is not the best, ie if some other part of the path contains the substring `/db`, the connection to db will fail. This could be the case for other computers
+
+A possible solution is to simply put the `knexfile.js` in the project's `root` folder and only have
+the following there and remove the conditional
+
+Personally I like keeping the `knexfile` in the `db` folder, since it only concerns the db
+
+`TODO:` Will try to come up with a more fullproof solution
+
+```js
+require("dotenv").config();
 ```
 
 ### Migration Tables
