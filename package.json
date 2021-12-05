@@ -8,7 +8,8 @@
   "type": "commonjs",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "migrate:db": "npx knex migrate:latest --knexfile db/knexfile.js"
   },
   "dependencies": {
     "dotenv": "^10.0.0",
