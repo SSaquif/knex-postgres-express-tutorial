@@ -8,6 +8,8 @@
   - [Contents](#contents)
   - [Intro & Resources](#intro--resources)
   - [Case Sensitivity Reminder](#case-sensitivity-reminder)
+  - [Code Architecture](#code-architecture)
+    - [Why both DAO & Service layer](#why-both-dao--service-layer)
   - [DB setup](#db-setup)
   - [knexfile.js](#knexfilejs)
   - [Migrations](#migrations)
@@ -23,12 +25,49 @@
 
 Learning knex.js with postgres & express. There is no FE for this project
 
+This tutorial has no request body validation
+
 - [Youtube Tutorial](https://www.youtube.com/watch?v=wfrn21E2NaU)
 - [knex.js,sql query builder](https://knexjs.org/)
+- [request body validation](https://www.youtube.com/watch?v=GfHsb6zPugo)
 
 ## Case Sensitivity Reminder
 
 > `Important:` With Databases always use underscores (snake case) when for naming purposes, never Pascal/Camel Case. Cause sometimes DBs can be case insensitive and that can cause tons of issues. I think camel case in nosql document keys are fine though.
+
+## Code Architecture
+
+Code logic/concerns are separated in separate folders
+
+1. routes
+   1. express endpoints
+2. db
+   1. migrations
+      1. db table schema(s) can found here
+      2. run it initially to create/migrate the dbs
+      3. see migrations section below
+   2. postgreDB.js
+      1. grants access to the db through an export `db` object
+   3. knexfile
+      1. access info for the db
+3. controller
+   1. Using classes (not required), helpful incase we need to do dependancy injection
+   2. If we want want we can access the `db` object from here
+   3. But the controller is not supposed to have direct access to the `data layer`
+   4. Hence we have a service layer
+   5. `Note:` The controller is just responsible for receiving the request and delgating it to the service layer and communicate any errors that might have occured
+4. service
+   1. The service layer is the one who actually has the logic and knows what to do
+5. dao (data access object)
+   1. The dao object/layer is basically there to abstract away the db access
+   2. So different DB backends can be used, cause our service doesn't care what underlying DB we are using. We could have different ones in the db folder.
+   3. If we have to switch the `DB` then we only have to modify this
+
+![Code Architecture](./assets/code_architecture.jpg)
+
+### Why both DAO & Service layer
+
+[Service layer vs DAO -- Why both?](https://softwareengineering.stackexchange.com/questions/220909/service-layer-vs-dao-why-both)
 
 ## DB setup
 
@@ -181,7 +220,9 @@ if (process.cwd().includes("/db")) {
 
 In addition to the `person` table created by this example, migrations also create 2 more tables. See video for more info.
 
-1. knex_migrations
+1. `knex_migrations`
    1. Tracks migrations history
-2. knex_migrations_lock
+2. `knex_migrations_lock`
    1. Provides mutex so that mutiple users can run migrations simultaneously
+
+##
